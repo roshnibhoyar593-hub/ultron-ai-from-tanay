@@ -1,0 +1,13 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
+    <style name="Theme.Ultron" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <!-- Primary brand color. -->
+        <item name="colorPrimary">@color/ultron_crimson</item>
+        <item name="colorPrimaryVariant">@color/ultron_dark_red</item>
+        <item name="colorOnPrimary">@color/ultron_text</item>
+        <!-- Status bar color. -->
+        <item name="android:statusBarColor">@color/ultron_black</item>
+        <item name="android:navigationBarColor">@color/ultron_black</item>
+        <item name="android:windowBackground">@color/ultron_black</item>
+    </style>
+</resources>

@@ -1,0 +1,8 @@
+<resources>
+    <color name="ultron_black">#030712</color>
+    <color name="ultron_dark_red">#450a0a</color>
+    <color name="ultron_crimson">#dc2626</color>
+    <color name="ultron_red_glow">#ff1e1e</color>
+    <color name="ultron_titanium">#1f242d</color>
+    <color name="ultron_text">#e5e7eb</color>
+</resources>

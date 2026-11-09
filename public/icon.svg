@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <radialGradient id="bg" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#180404" />
+      <stop offset="70%" stop-color="#070202" />
+      <stop offset="100%" stop-color="#020101" />
+    </radialGradient>
+    <linearGradient id="armor" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#374151" />
+      <stop offset="40%" stop-color="#1f242d" />
+      <stop offset="100%" stop-color="#090d16" />
+    </linearGradient>
+    <filter id="glow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="12" result="blur" />
+      <feMerge>
+        <feMergeNode in="blur" />
+        <feMergeNode in="blur" />
+        <feMergeNode in="SourceGraphic" />
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Background Circle for Android Adaptive Icons -->
+  <rect width="512" height="512" rx="110" fill="url(#bg)" stroke="#7f1d1d" stroke-width="4" />
+
+  <!-- Outer Radar Reticle -->
+  <circle cx="256" cy="256" r="210" fill="none" stroke="#450a0a" stroke-width="2" stroke-dasharray="10 14" opacity="0.6" />
+  <circle cx="256" cy="256" r="175" fill="none" stroke="#991b1b" stroke-width="1.5" opacity="0.4" />
+
+  <!-- Skull Cranium -->
+  <path d="M140 220 C120 130, 190 70, 256 70 C322 70, 392 130, 372 220 C364 260, 345 300, 330 330 L182 330 C167 300, 148 260, 140 220 Z" fill="url(#armor)" stroke="#4b5563" stroke-width="4" />
+
+  <!-- Brow Plate -->
+  <path d="M165 210 L256 235 L347 210 L335 240 L256 260 L177 240 Z" fill="#111827" stroke="#374151" stroke-width="3" />
+
+  <!-- Crimson Eyes -->
+  <g filter="url(#glow)">
+    <polygon points="175,230 235,245 230,256 180,246" fill="#ff1e1e" />
+    <polygon points="337,230 277,245 282,256 332,246" fill="#ff1e1e" />
+    <line x1="182" y1="237" x2="228" y2="248" stroke="#ffffff" stroke-width="3" />
+    <line x1="330" y1="237" x2="284" y2="248" stroke="#ffffff" stroke-width="3" />
+  </g>
+
+  <!-- Central Crest & Mind Matrix -->
+  <polygon points="256,90 266,115 256,135 246,115" fill="#ef4444" filter="url(#glow)" />
+  <line x1="256" y1="90" x2="256" y2="220" stroke="#b91c1c" stroke-width="2" />
+
+  <!-- Vocal Chamber Teeth -->
+  <g filter="url(#glow)">
+    <line x1="210" y1="310" x2="302" y2="310" stroke="#dc2626" stroke-width="4" />
+    <line x1="220" y1="324" x2="292" y2="324" stroke="#dc2626" stroke-width="4" />
+  </g>
+
+  <!-- Lower Chin Armor -->
+  <polygon points="205,330 307,330 286,410 256,430 226,410" fill="url(#armor)" stroke="#374151" stroke-width="4" />
+  <line x1="256" y1="340" x2="256" y2="425" stroke="#ef4444" stroke-width="2" opacity="0.8" />
+</svg>

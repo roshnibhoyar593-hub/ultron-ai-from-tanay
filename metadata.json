@@ -1,0 +1,8 @@
+{
+  "name": "ULTRON - Kali Cyber Autonomous AI",
+  "description": "An autonomous cyber intelligence AI inspired by Ultron for Kali Linux, created by Tanay. Features voice synthesis, menacing cybernetic visualizer, background daemon monitoring, and offensive/defensive security tools.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
