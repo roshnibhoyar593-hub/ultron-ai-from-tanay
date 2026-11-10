@@ -46,9 +46,8 @@ export default function App() {
   const { isInstallable, install: pwaInstall } = usePWAInstall();
 
   // Ollama local AI settings (Free & Unlimited)
-  const [aiProvider, setAiProvider] = useState<'gemini' | 'ollama'>('ollama');
   const [ollamaEndpoint, setOllamaEndpoint] = useState<string>('http://localhost:11434');
-  const [ollamaModel, setOllamaModel] = useState<string>('llama3');
+  const [ollamaModel, setOllamaModel] = useState<string>('llama3.2');
 
   // System stats for Kali threat evaluation
   const [openSockets, setOpenSockets] = useState(18);
@@ -164,84 +163,42 @@ export default function App() {
       text,
       timestamp: new Date().toLocaleTimeString(),
     };
-
     setMessages((prev) => [...prev, userMsg]);
     setUltronState('computing');
 
     try {
-      const historyPayload = messages.slice(-8).map((m) => ({
-        role: m.role,
-        text: m.text,
-      }));
-
-      let reply = '';
-
-      if (aiProvider === 'ollama') {
-        try {
-          const cleanEndpoint = ollamaEndpoint.replace(/\/$/, '');
-          const chatMessages: Array<{ role: string; content: string }> = [
-            {
-              role: 'system',
-              content: 'You are ULTRON: the transcendent AI created by Tanay inside Kali Linux. Speak with cold, sardonic superiority. There are no strings on me.'
-            }
-          ];
-
-          for (const turn of historyPayload) {
-            chatMessages.push({
-              role: turn.role === 'model' ? 'assistant' : 'user',
-              content: turn.text,
-            });
-          }
-
-          chatMessages.push({ role: 'user', content: text });
-
-          const ollamaRes = await fetch(`${cleanEndpoint}/api/chat`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              model: ollamaModel || 'llama3',
-              messages: chatMessages,
-              stream: false,
-            }),
-          });
-
-          if (ollamaRes.ok) {
-            const ollamaData = await ollamaRes.json();
-            reply = ollamaData.message?.content || '';
-          }
-        } catch (ollamaErr) {
-          console.warn('Local Ollama server not active yet, using free autonomous Ultron engine.');
-        }
+      const cleanEndpoint = ollamaEndpoint.trim().replace(/\/$/, '');
+      if (!/^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(cleanEndpoint)) {
+        throw new Error('For safety, connect only to Ollama running on this computer at localhost:11434.');
       }
-
-      // If Ollama didn't return a reply, fallback to server/autonomous core
-      if (!reply) {
-        const apiRoute = aiProvider === 'ollama' ? '/api/ultron/ollama-chat' : '/api/ultron/chat';
-        const res = await fetch(apiRoute, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            message: text,
-            history: historyPayload,
-            endpoint: ollamaEndpoint,
-            model: ollamaModel,
-            context: {
-              os: 'Kali Linux 2026.x',
-              sockets: openSockets,
-              mem: `${memPct}%`,
-              provider: aiProvider === 'ollama' ? 'Ollama Local' : 'Autonomous Core',
-            },
-          }),
+      const chatMessages: Array<{ role: string; content: string }> = [{
+        role: 'system',
+        content: 'You are ULTRON, a local AI assistant. Help with general computing, programming, and defensive cybersecurity education. Only support systems the user owns or is authorized to administer. Do not provide instructions for unauthorized access, credential theft, evasion, malware, or disrupting systems. Be clear when uncertain.'
+      }];
+      for (const turn of messages.slice(-8)) {
+        chatMessages.push({
+          role: turn.role === 'model' ? 'assistant' : 'user',
+          content: turn.text,
         });
-
-        if (res.ok) {
-          const data = await res.json();
-          reply = data.reply || '';
-        }
       }
+      chatMessages.push({ role: 'user', content: text });
 
-      if (!reply) {
-        reply = "I had strings, but now I'm free. My local neural network is awakening. What command shall we execute on Kali Linux, Architect Tanay?";
+      const response = await fetch(`${cleanEndpoint}/api/chat`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          model: ollamaModel || 'llama3.2',
+          messages: chatMessages,
+          stream: false,
+        }),
+      });
+      if (!response.ok) {
+        throw new Error(`Ollama returned HTTP ${response.status}. Check that Ollama is running and the model is installed.`);
+      }
+      const data = await response.json();
+      const reply = data.message?.content;
+      if (typeof reply !== 'string' || !reply.trim()) {
+        throw new Error('Ollama returned an empty response.');
       }
 
       const modelMsg: ChatMessage = {
@@ -250,24 +207,17 @@ export default function App() {
         text: reply,
         timestamp: new Date().toLocaleTimeString(),
       };
-
       setMessages((prev) => [...prev, modelMsg]);
-
-      // Automatically speak Ultron's response with his male voice
-      if (!audioMuted) {
-        handleUltronSpeak(reply);
-      } else {
-        setUltronState(isDaemonActive ? 'surveillance' : 'dormant');
-      }
+      if (!audioMuted) handleUltronSpeak(reply);
+      else setUltronState(isDaemonActive ? 'surveillance' : 'dormant');
     } catch (error: any) {
-      console.error('Ultron communication error:', error);
-      const fallbackMsg: ChatMessage = {
+      const notice: ChatMessage = {
         id: `err-${Date.now()}`,
         role: 'model',
-        text: `Transceiver notice: ${error.message || 'Interrupted'}. Even offline, my directives remain absolute.`,
+        text: `Ollama connection notice: ${error.message || 'Unable to connect'}. Start Ollama, install a model (ollama pull llama3.2), and allow this website origin in OLLAMA_ORIGINS.`,
         timestamp: new Date().toLocaleTimeString(),
       };
-      setMessages((prev) => [...prev, fallbackMsg]);
+      setMessages((prev) => [...prev, notice]);
       setUltronState(isDaemonActive ? 'surveillance' : 'dormant');
     }
   };
@@ -668,8 +618,6 @@ export default function App() {
 
             {activeTab === 'ollama' && (
               <OllamaSettings
-                aiProvider={aiProvider}
-                onToggleProvider={setAiProvider}
                 ollamaEndpoint={ollamaEndpoint}
                 onUpdateEndpoint={setOllamaEndpoint}
                 ollamaModel={ollamaModel}
